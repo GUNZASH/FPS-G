@@ -7,6 +7,7 @@ public class AK47 : MonoBehaviour
 {
     public Camera fpsCamera;
     public Transform gunBarrel; // ตำแหน่งกระสุนออก
+    public GameObject bulletPrefab; // Prefab กระสุน
     public GameObject bulletImpact; // Effect กระสุนโดน
     public TextMeshProUGUI ammoText; // UI กระสุน
 
@@ -24,6 +25,11 @@ public class AK47 : MonoBehaviour
 
     private float nextTimeToFire = 0f;
     private Vector3 defaultGunPosition;
+
+    //ตัวแปร Recoil
+    private Vector2 currentRecoil = Vector2.zero;
+    private Vector2 recoilSmoothDamp = Vector2.zero;
+    public float recoilResetSpeed = 5f;
 
     void Start()
     {
@@ -58,6 +64,8 @@ public class AK47 : MonoBehaviour
         {
             Aim(false);
         }
+        // ✅ คืนค่า Recoil ค่อยๆ กลับที่เดิม
+        currentRecoil = Vector2.SmoothDamp(currentRecoil, Vector2.zero, ref recoilSmoothDamp, recoilResetSpeed * Time.deltaTime);
     }
 
     void Shoot()
@@ -65,24 +73,38 @@ public class AK47 : MonoBehaviour
         currentAmmo--;
         UpdateAmmoUI();
 
-        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
+        // Raycast จากกลางจอ (fpsCamera) ไปข้างหน้า
+        Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-        // ยิง Raycast และตรวจสอบว่าชน GameObject ที่มี Collider หรือไม่
-        if (Physics.Raycast(ray, out hit, 100f))
-        {
-            if (hit.collider != null) // ตรวจสอบว่าชน Collider จริง ๆ
-            {
-                Debug.Log("Hit Collider: " + hit.collider.gameObject.name);
+        Vector3 targetPoint;
 
-                // สร้าง Bullet Impact ที่ตำแหน่งที่โดน และหมุนไปตามพื้นผิว
-                GameObject impact = Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impact, 2f);
-            }
+        if (Physics.Raycast(ray, out hit))
+        {
+            targetPoint = hit.point; // จุดที่ Raycast โดน
+        }
+        else
+        {
+            targetPoint = ray.GetPoint(100f); // ถ้าไม่โดนอะไร ยิงไปไกลๆ
         }
 
-        // Recoil Effect
-        fpsCamera.transform.localRotation *= Quaternion.Euler(-recoilAmount, Random.Range(-recoilAmount, recoilAmount), 0f);
+        // คำนวณทิศทางกระสุนให้พุ่งไปยังจุดที่ Raycast โดน
+        Vector3 direction = (targetPoint - gunBarrel.position).normalized;
+
+        // สร้างกระสุนที่ปลายกระบอกปืน และให้มันพุ่งไปตามทิศทางที่คำนวณ
+        GameObject bullet = Instantiate(bulletPrefab, gunBarrel.position, Quaternion.LookRotation(direction));
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.velocity = direction * 50f; // ปรับความเร็วกระสุน
+
+        // ✅ เพิ่มค่า Recoil สะสม
+        currentRecoil += new Vector2(Random.Range(-recoilAmount, recoilAmount), recoilAmount);
+
+        // ✅ ใช้ Recoil Effect
+        ApplyRecoil();
+    }
+    void ApplyRecoil()
+    {
+        fpsCamera.transform.localRotation *= Quaternion.Euler(-currentRecoil.y, currentRecoil.x, 0f);
     }
 
     IEnumerator Reload()

@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - AK47
+  - Bullet
+  - Environment
+  - Enemy
   layers:
   - Default
   - TransparentFX
