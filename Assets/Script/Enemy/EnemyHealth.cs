@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class EnemyHealth : MonoBehaviour
 {
     public float maxHealth = 100f;  // ค่า HP สูงสุด
     private float currentHealth;    // ค่า HP ปัจจุบัน
+    public Action OnDeath;
 
     void Start()
     {
@@ -35,6 +37,7 @@ public class EnemyHealth : MonoBehaviour
     void Die()
     {
         Debug.Log("Enemy Died!");
+        OnDeath?.Invoke();
         Destroy(gameObject); // ลบศัตรูออกจากฉาก
     }
 }
