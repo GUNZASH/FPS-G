@@ -38,6 +38,7 @@ public class EnemyHealth : MonoBehaviour
     {
         Debug.Log("Enemy Died!");
         OnDeath?.Invoke();
+        GetComponent<EnemyDeath>().HandleDeath();
         Destroy(gameObject); // ลบศัตรูออกจากฉาก
     }
 }

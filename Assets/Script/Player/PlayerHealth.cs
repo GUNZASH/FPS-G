@@ -44,5 +44,6 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Player Died!");
         // ใส่ระบบตาย เช่น รีเซ็ตเกม, แสดง UI, เล่นอนิเมชั่น ฯลฯ
+        GetComponent<PlayerDeath>().HandleDeath();
     }
 }

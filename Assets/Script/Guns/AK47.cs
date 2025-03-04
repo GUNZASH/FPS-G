@@ -140,4 +140,10 @@ public class AK47 : MonoBehaviour
     {
         ammoText.text = currentAmmo + " / " + reserveAmmo;
     }
+    public void ResetAmmo()
+    {
+        currentAmmo = maxAmmo;
+        reserveAmmo = 180; // หรือค่าที่ต้องการให้เป็นค่าเริ่มต้น
+        UpdateAmmoUI();
+    }
 }
