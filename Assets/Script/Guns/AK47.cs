@@ -82,6 +82,15 @@ public class AK47 : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             targetPoint = hit.point; // จุดที่ Raycast โดน
+
+            // ✅ ตรวจจับว่าโดนศัตรูหรือไม่
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                hit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
+            }
+
+            // ✅ สร้าง Impact Effect ตรงจุดที่กระสุนโดน
+            Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
         }
         else
         {
@@ -91,10 +100,11 @@ public class AK47 : MonoBehaviour
         // คำนวณทิศทางกระสุนให้พุ่งไปยังจุดที่ Raycast โดน
         Vector3 direction = (targetPoint - gunBarrel.position).normalized;
 
-        // สร้างกระสุนที่ปลายกระบอกปืน และให้มันพุ่งไปตามทิศทางที่คำนวณ
+        // ✅ Fake Bullet (เฉพาะเอฟเฟกต์กระสุนพุ่ง)
         GameObject bullet = Instantiate(bulletPrefab, gunBarrel.position, Quaternion.LookRotation(direction));
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.velocity = direction * 50f; // ปรับความเร็วกระสุน
+        Destroy(bullet, 0.1f); // กระสุนหายไปเร็วๆ เพื่อไม่ให้มีฟิสิกส์จริง
 
         // ✅ เพิ่มค่า Recoil สะสม
         currentRecoil += new Vector2(Random.Range(-recoilAmount, recoilAmount), recoilAmount);
