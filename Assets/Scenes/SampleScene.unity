@@ -415,7 +415,7 @@ Transform:
   m_GameObject: {fileID: 242980067}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -17, y: 1.2136431, z: 5.7}
+  m_LocalPosition: {x: -16, y: 1.2136431, z: 9.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -493,7 +493,7 @@ Transform:
   m_GameObject: {fileID: 366731388}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.28, y: 1.2136431, z: 5.7}
+  m_LocalPosition: {x: -16, y: 1.2136431, z: 19.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -823,8 +823,8 @@ MonoBehaviour:
   - {fileID: 366731389}
   - {fileID: 242980068}
   - {fileID: 978584123}
-  spawnInterval: 3
-  maxEnemies: 10
+  spawnInterval: 5
+  maxEnemies: 4
 --- !u!4 &838340162
 Transform:
   m_ObjectHideFlags: 0
@@ -998,7 +998,7 @@ Transform:
   m_GameObject: {fileID: 978584122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.5, y: 1.2136431, z: 5.7}
+  m_LocalPosition: {x: -16, y: 1.2136431, z: -6.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1683,7 +1683,7 @@ Transform:
   m_GameObject: {fileID: 1688237705}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.7, y: 1.2136431, z: 5.7}
+  m_LocalPosition: {x: -16, y: 1.2136431, z: 34.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2070,6 +2070,10 @@ PrefabInstance:
     - target: {fileID: 6026862803525570695, guid: 42c4b3eee32c3b141a1c297a692137b1, type: 3}
       propertyPath: maxHealth
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7122728680566834911, guid: 42c4b3eee32c3b141a1c297a692137b1, type: 3}
+      propertyPath: maxAmmo
+      value: 9999
       objectReference: {fileID: 0}
     - target: {fileID: 7122728680566834911, guid: 42c4b3eee32c3b141a1c297a692137b1, type: 3}
       propertyPath: ammoText

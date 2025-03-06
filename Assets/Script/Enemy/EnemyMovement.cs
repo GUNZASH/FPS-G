@@ -8,13 +8,11 @@ public class EnemyMovement : MonoBehaviour
     private Transform player;  // อ้างอิงตำแหน่งของ Player
     public float detectionRange = 10f; // ระยะที่ศัตรูจะเริ่มไล่ล่า
     public float stopDistance = 1.5f; // ระยะที่ศัตรูจะหยุด (กันชน Player)
-
-    private NavMeshAgent agent;
+    public float moveSpeed = 3f; // ความเร็วในการเคลื่อนที่ของศัตรู
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>(); // ดึง Component NavMeshAgent
-        FindPlayer(); // หาตำแหน่ง Player อัตโนมัติ
+        FindPlayer(); // ค้นหาผู้เล่นตอนเริ่มต้น
     }
 
     void Update()
@@ -27,17 +25,17 @@ public class EnemyMovement : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, player.position);
 
+        // ถ้าผู้เล่นอยู่ในระยะที่สามารถตรวจจับได้
         if (distance <= detectionRange)
         {
-            agent.SetDestination(player.position); // เดินไปที่ตำแหน่ง Player
+            // เลื่อนศัตรูไปหาผู้เล่น
+            transform.position = Vector3.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
+            // ถ้าถึงระยะหยุดแล้ว (ระยะที่ศัตรูจะหยุดเคลื่อนที่)
             if (distance <= stopDistance)
             {
-                agent.isStopped = true; // หยุดเดินเมื่อถึงระยะกำหนด
-            }
-            else
-            {
-                agent.isStopped = false; // เดินต่อไปถ้ายังไม่ถึง
+                // หยุดศัตรูที่จุดนี้
+                // สามารถเพิ่มการทำงานอื่นๆ เช่น การโจมตี หรือทำอะไรที่ต้องการเมื่อถึงระยะนี้
             }
         }
     }

@@ -9,6 +9,7 @@ public class EnemyHealth : MonoBehaviour
     private float currentHealth;    // ค่า HP ปัจจุบัน
     public Action OnDeath;
 
+
     void Start()
     {
         currentHealth = maxHealth; // เริ่มเกมด้วยค่า Max HP
@@ -40,5 +41,15 @@ public class EnemyHealth : MonoBehaviour
         OnDeath?.Invoke();
         GetComponent<EnemyDeath>().HandleDeath();
         Destroy(gameObject); // ลบศัตรูออกจากฉาก
+    }
+
+    public bool IsAlive()
+    {
+        return currentHealth > 0; // ถ้า HP ยังมากกว่า 0, หมายความว่ามีชีวิต
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth; // รีเซ็ต HP ให้เต็ม
     }
 }

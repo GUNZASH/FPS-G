@@ -76,31 +76,37 @@ public class AK47 : MonoBehaviour
         // Raycast จากกลางจอ (fpsCamera) ไปข้างหน้า
         Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
+        Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 1f); // วาดเส้น Raycast
 
         Vector3 targetPoint;
 
-        if (Physics.Raycast(ray, out hit))
+        LayerMask enemyLayer = LayerMask.GetMask("Enemy"); // เปลี่ยน "Enemy" เป็นชื่อ Layer ของศัตรู
+
+        // ตรวจจับการชน (ยิงไปที่ศัตรูหรือเปล่า)
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, enemyLayer)) // เพิ่ม Layer Mask
         {
+            Debug.Log("โดน: " + hit.collider.gameObject.name); // เช็คว่าโดนอะไร
             targetPoint = hit.point; // จุดที่ Raycast โดน
 
             // ✅ ตรวจจับว่าโดนศัตรูหรือไม่
-            if (hit.collider.CompareTag("Enemy"))
+            if (hit.collider.TryGetComponent<EnemyHealth>(out EnemyHealth enemy))
             {
-                hit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
+                Debug.Log("โดนศัตรู!"); // เช็คว่าโดนศัตรูจริงๆ ไหม
+                enemy.TakeDamage(damage);
             }
 
             // ✅ สร้าง Impact Effect ตรงจุดที่กระสุนโดน
-            Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
+            //Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
         }
         else
         {
-            targetPoint = ray.GetPoint(100f); // ถ้าไม่โดนอะไร ยิงไปไกลๆ
+            targetPoint = ray.GetPoint(150f); // เพิ่มระยะทางการยิงที่ไกลขึ้น
         }
 
         // คำนวณทิศทางกระสุนให้พุ่งไปยังจุดที่ Raycast โดน
         Vector3 direction = (targetPoint - gunBarrel.position).normalized;
 
-        // ✅ Fake Bullet (เฉพาะเอฟเฟกต์กระสุนพุ่ง)
+        // ✅ Fake Bullet (กระสุนออกมาตรงๆ โดยไม่สนใจอะไร)
         GameObject bullet = Instantiate(bulletPrefab, gunBarrel.position, Quaternion.LookRotation(direction));
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.velocity = direction * 50f; // ปรับความเร็วกระสุน
