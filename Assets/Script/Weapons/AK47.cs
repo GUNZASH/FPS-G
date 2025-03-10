@@ -70,6 +70,8 @@ public class AK47 : MonoBehaviour
 
     void Shoot()
     {
+        if (!gameObject.activeSelf) return; // ถ้าปืนถูกซ่อน → ห้ามยิง
+
         currentAmmo--;
         UpdateAmmoUI();
 
