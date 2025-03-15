@@ -40,6 +40,10 @@ public class PlayerDeath : MonoBehaviour
         Time.timeScale = 1; // ทำให้เกมเล่นต่อได้
         ResetGameState(); // รีเซ็ตค่าทุกอย่าง
 
+        // โหลด Scene ใหม่
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        // หลังจากโหลด Scene ใหม่แล้ว จะทำการรีเซ็ตตำแหน่ง Player
         if (respawnPoint != null)
         {
             // ย้าย Player ไปจุด Respawn
@@ -68,6 +72,7 @@ public class PlayerDeath : MonoBehaviour
         Cursor.lockState = isLocked ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !isLocked;
     }
+
     private void ResetGameState()
     {
         // รีเซ็ตคะแนน

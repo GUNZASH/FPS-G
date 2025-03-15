@@ -13,6 +13,8 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth; // เริ่มเกมด้วยค่า Max HP
+
+        OnDeath += GetComponent<EnemyDeath>().HandleDeath; // เชื่อม OnDeath กับ EnemyDeath
     }
 
     void OnTriggerEnter(Collider other)
@@ -31,16 +33,21 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            Die();
+            Die(); // ถ้า HP <= 0 ให้ศัตรูตาย
         }
     }
 
     void Die()
     {
         Debug.Log("Enemy Died!");
-        OnDeath?.Invoke();
-        GetComponent<EnemyDeath>().HandleDeath();
-        Destroy(gameObject); // ลบศัตรูออกจากฉาก
+        OnDeath?.Invoke();  // แจ้งว่า Enemy ตาย
+
+        // เรียกใช้ EnemyDeath เพื่อเพิ่มคะแนน
+        GetComponent<EnemyDeath>()?.HandleDeath();
+
+        // ทำให้ศัตรูไม่เคลื่อนไหวเมื่อตาย
+        GetComponent<EnemyMovement>().enabled = false;
+        Destroy(gameObject);
     }
 
     public bool IsAlive()

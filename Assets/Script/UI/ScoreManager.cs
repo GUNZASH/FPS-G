@@ -14,6 +14,7 @@ public class ScoreManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            Debug.Log("ScoreManager instance set");  // ตรวจสอบ
         }
         else
         {
@@ -30,6 +31,7 @@ public class ScoreManager : MonoBehaviour
     public void AddScore(int amount)
     {
         score += amount;
+        Debug.Log("Adding score: " + amount);  // ตรวจสอบ
         UpdateScoreUI();
     }
 

@@ -25,6 +25,9 @@ public class EnemyMovement : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, player.position);
 
+        // Enemy หันไปมอง Player (โดยให้หัวหันไปทาง -X)
+        LookAtPlayer();
+
         // ถ้าผู้เล่นอยู่ในระยะที่สามารถตรวจจับได้
         if (distance <= detectionRange)
         {
@@ -37,6 +40,20 @@ public class EnemyMovement : MonoBehaviour
                 // หยุดศัตรูที่จุดนี้
                 // สามารถเพิ่มการทำงานอื่นๆ เช่น การโจมตี หรือทำอะไรที่ต้องการเมื่อถึงระยะนี้
             }
+        }
+    }
+
+    void LookAtPlayer()
+    {
+        // คำนวณทิศทางจาก Enemy ไปหา Player
+        Vector3 directionToPlayer = player.position - transform.position;
+        directionToPlayer.y = 0; // ล็อคแกน Y ไม่ให้เงยหน้าหรือก้มหน้า
+
+        if (directionToPlayer != Vector3.zero)
+        {
+            // หมุน Enemy โดยให้ด้าน **-X** ของโมเดลหันไปทาง Player
+            Quaternion targetRotation = Quaternion.LookRotation(-directionToPlayer, Vector3.up);
+            transform.rotation = targetRotation;
         }
     }
 

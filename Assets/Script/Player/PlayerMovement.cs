@@ -20,9 +20,15 @@ public class PlayerMovement : MonoBehaviour
     public float groundDistance = 0.3f;
     public LayerMask groundMask;
 
+    public Animator animator;  // ตัวแปรสำหรับควบคุม Animator
+
     void Start()
     {
         speed = walkSpeed;
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();  // ค้นหา Animator ใน child ของ Player
+        }
     }
 
     void Update()
@@ -47,14 +53,27 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) && !isCrouching)
         {
             speed = runSpeed;
+            animator.SetBool("isRunning", true);  // วิ่ง
         }
         else if (isCrouching)
         {
             speed = crouchSpeed;
+            animator.SetBool("isRunning", false);  // ไม่วิ่ง
         }
         else
         {
             speed = walkSpeed;
+            animator.SetBool("isRunning", false);  // ไม่วิ่ง
+        }
+
+        // เปลี่ยนแอนิเมชั่นการเดิน
+        if (x == 0 && z == 0)
+        {
+            animator.SetBool("isIdle", true);  // ยืน
+        }
+        else
+        {
+            animator.SetBool("isIdle", false); // ไม่ยืน
         }
 
         // Jump (กระโดด)

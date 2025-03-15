@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class AK47 : MonoBehaviour
 {
+    public Animator gunAnimator; // เชื่อม Animator ของ Model_AK47
+
     public Camera fpsCamera;
     public Transform gunBarrel; // ตำแหน่งกระสุนออก
     public GameObject bulletPrefab; // Prefab กระสุน
@@ -18,6 +20,7 @@ public class AK47 : MonoBehaviour
     public int reserveAmmo = 90;
     private int currentAmmo;
     private bool isReloading = false;
+    public bool canShoot = true; // เปิดให้ยิงได้ตามปกติ
 
     public float aimFOV = 40f;
     private float normalFOV;
@@ -27,12 +30,27 @@ public class AK47 : MonoBehaviour
     private Vector3 defaultGunPosition;
 
     //ตัวแปร Recoil
-    private Vector2 currentRecoil = Vector2.zero;
-    private Vector2 recoilSmoothDamp = Vector2.zero;
-    public float recoilResetSpeed = 5f;
+    private Vector3 currentRecoil = Vector3.zero;
+    private Vector3 recoilSmoothDamp = Vector3.zero;
+    public float recoilResetSpeed = 1f;
+
+    public float cameraShakeAmount = 0.1f;
+    public float shakeFrequency = 0.1f;   // เพิ่มตัวแปรสำหรับความถี่การสั่น (ปรับให้ถี่ขึ้น)
+    private Vector3 cameraShakeOffset = Vector3.zero;
+
+    // ตัวแปรที่ใช้คำนวณการกลับคืนตำแหน่งกล้อง
+    private Vector3 defaultCameraPosition;
+
 
     void Start()
     {
+        defaultCameraPosition = fpsCamera.transform.localPosition;
+
+        if (gunAnimator == null)
+        {
+            Debug.LogError("Animator ยังไม่ได้เชื่อมกับ Model_AK47!");
+        }
+
         currentAmmo = maxAmmo;
         normalFOV = fpsCamera.fieldOfView;
         defaultGunPosition = transform.localPosition;
@@ -41,6 +59,10 @@ public class AK47 : MonoBehaviour
 
     void Update()
     {
+        // ✅ คืนค่าการสั่นของกล้องค่อยๆ กลับที่เดิม
+        cameraShakeOffset = Vector3.Lerp(cameraShakeOffset, Vector3.zero, recoilResetSpeed * Time.deltaTime);
+
+
         if (Input.GetMouseButton(0) && Time.time >= nextTimeToFire && !isReloading)
         {
             if (currentAmmo > 0)
@@ -48,6 +70,14 @@ public class AK47 : MonoBehaviour
                 Shoot();
                 nextTimeToFire = Time.time + fireRate;
             }
+        }
+        // ใช้การสั่นของกล้อง
+        ApplyRecoil();
+
+        // ✅ หยุดหมุนปืนเมื่อปล่อยปุ่มยิง
+        if (Input.GetMouseButtonUp(0))
+        {
+            gunAnimator.SetBool("isFiring", false);
         }
 
         if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo && reserveAmmo > 0)
@@ -65,15 +95,25 @@ public class AK47 : MonoBehaviour
             Aim(false);
         }
         // ✅ คืนค่า Recoil ค่อยๆ กลับที่เดิม
-        currentRecoil = Vector2.SmoothDamp(currentRecoil, Vector2.zero, ref recoilSmoothDamp, recoilResetSpeed * Time.deltaTime);
+        currentRecoil = Vector3.SmoothDamp(currentRecoil, Vector2.zero, ref recoilSmoothDamp, recoilResetSpeed * Time.deltaTime);
     }
 
     void Shoot()
     {
+        if (!canShoot) return; // ห้ามยิงถ้าใช้งานระเบิดอยู่
         if (!gameObject.activeSelf) return; // ถ้าปืนถูกซ่อน → ห้ามยิง
 
         currentAmmo--;
         UpdateAmmoUI();
+
+        // ✅ เริ่มหมุนปืน (ถ้ายังไม่หมุน)
+        if (!gunAnimator.GetBool("isFiring"))
+        {
+            gunAnimator.SetBool("isFiring", true);
+        }
+
+        // ✅ เล่นอนิเมชั่นยิงปืน
+        //gunAnimator.SetTrigger("Shoot");
 
         // Raycast จากกลางจอ (fpsCamera) ไปข้างหน้า
         Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -114,15 +154,38 @@ public class AK47 : MonoBehaviour
         rb.velocity = direction * 50f; // ปรับความเร็วกระสุน
         Destroy(bullet, 0.1f); // กระสุนหายไปเร็วๆ เพื่อไม่ให้มีฟิสิกส์จริง
 
-        // ✅ เพิ่มค่า Recoil สะสม
-        currentRecoil += new Vector2(Random.Range(-recoilAmount, recoilAmount), recoilAmount);
+        // เพิ่มค่า Recoil สะสม
+        currentRecoil += new Vector3(Random.Range(-recoilAmount, recoilAmount), recoilAmount);
+
+        // เพิ่มการสั่นของกล้องหลายครั้งในแต่ละการยิง
+        StartCoroutine(ShakeCamera());  // เรียกฟังก์ชันสั่นกล้องถี่ขึ้น
+
 
         // ✅ ใช้ Recoil Effect
         ApplyRecoil();
     }
+
+    IEnumerator ShakeCamera()
+    {
+        // สั่นกล้องหลายๆ ครั้งในระยะเวลาเร็ว
+        float shakeDuration = 0.1f; // ระยะเวลาที่การสั่นจะเกิดขึ้น
+        float timer = 0f;
+
+        while (timer < shakeDuration)
+        {
+            cameraShakeOffset = new Vector3(Random.Range(-cameraShakeAmount, cameraShakeAmount), Random.Range(-cameraShakeAmount, cameraShakeAmount), 0f);
+            timer += shakeFrequency; // เพิ่มความถี่ในการสั่น
+            yield return new WaitForSeconds(shakeFrequency);  // ปรับเวลาหน่วงตามความถี่
+        }
+    }
+
     void ApplyRecoil()
     {
+        // สั่นกล้อง
         fpsCamera.transform.localRotation *= Quaternion.Euler(-currentRecoil.y, currentRecoil.x, 0f);
+
+        // การสั่นของกล้อง
+        fpsCamera.transform.localPosition = defaultCameraPosition + cameraShakeOffset;
     }
 
     IEnumerator Reload()

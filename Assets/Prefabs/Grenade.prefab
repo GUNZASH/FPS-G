@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6826539500387112651}
   - component: {fileID: 7195095031730146574}
   - component: {fileID: 1126523297162281478}
+  - component: {fileID: -1542322437923598319}
   m_Layer: 0
   m_Name: Grenade
   m_TagString: Untagged
@@ -123,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c947c090492e96e4fa1db43180c92049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grenadePrefab: {fileID: 0}
+  grenadePrefab: {fileID: 4782171453303547613}
   throwPoint: {fileID: 6786077866820081515}
   throwForce: 10
   maxHoldTime: 2
@@ -172,6 +173,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!95 &-1542322437923598319
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4782171453303547613}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6386073850049968322
 GameObject:
   m_ObjectHideFlags: 0

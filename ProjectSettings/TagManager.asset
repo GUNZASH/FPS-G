@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - Environment
   - Enemy
+  - DeathZone
   layers:
   - Default
   - TransparentFX

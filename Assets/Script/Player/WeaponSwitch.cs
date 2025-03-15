@@ -6,6 +6,7 @@ public class WeaponSwitch : MonoBehaviour
 {
     public GameObject AK47; // อ้างอิง AK47
     public GameObject Grenade; // อ้างอิงระเบิด
+    public AK47 ak47Script; // อ้างอิงสคริปต์ AK47 (ต้องใส่ใน Inspector)
 
     private int selectedWeapon = 0; // 0 = AK47, 1 = Grenade
 
@@ -32,12 +33,7 @@ public class WeaponSwitch : MonoBehaviour
 
         // ใช้ลูกกลิ้งเมาส์ (Scroll Wheel) สลับอาวุธ
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll > 0f)
-        {
-            selectedWeapon = (selectedWeapon == 0) ? 1 : 0; // สลับอาวุธ
-            EquipWeapon(selectedWeapon);
-        }
-        else if (scroll < 0f)
+        if (scroll > 0f || scroll < 0f)
         {
             selectedWeapon = (selectedWeapon == 0) ? 1 : 0; // สลับอาวุธ
             EquipWeapon(selectedWeapon);
@@ -48,13 +44,15 @@ public class WeaponSwitch : MonoBehaviour
     {
         if (weaponIndex == 0)
         {
-            AK47.SetActive(true);
-            Grenade.SetActive(false); // ปิดการแสดงระเบิดเมื่อถือ AK47
+            AK47.SetActive(true); // AK47 แสดงตลอด
+            Grenade.SetActive(false);
+            ak47Script.canShoot = true; // ให้ยิงได้
         }
         else
         {
-            AK47.SetActive(false);
-            Grenade.SetActive(true); // เปิดการแสดงระเบิดเมื่อถือระเบิด
+            AK47.SetActive(true); // AK47 ยังคงแสดง
+            Grenade.SetActive(true);
+            ak47Script.canShoot = false; // ห้ามยิง AK47
         }
     }
 }

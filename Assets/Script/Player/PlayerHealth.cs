@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -11,9 +12,12 @@ public class PlayerHealth : MonoBehaviour
     public float damageCooldown = 1f; // คูลดาวน์ก่อนโดนดาเมจซ้ำ
     private float lastDamageTime;   // เวลาที่โดนดาเมจล่าสุด
 
+    public TextMeshProUGUI healthText; // ตัวแปรเพื่อเชื่อมกับ TextMeshPro ใน UI
+
     void Start()
     {
         currentHealth = maxHealth; // เริ่มเกมด้วย HP เต็ม
+        UpdateHealthUI(); // อัพเดต UI เมื่อเริ่มเกม
     }
 
     void OnCollisionEnter(Collision collision)
@@ -24,7 +28,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         if (Time.time - lastDamageTime >= damageCooldown) // เช็คคูลดาวน์ก่อนลดเลือด
         {
@@ -32,6 +36,8 @@ public class PlayerHealth : MonoBehaviour
             lastDamageTime = Time.time;
 
             Debug.Log("Player HP: " + currentHealth);
+
+            UpdateHealthUI(); // อัพเดต UI ทุกครั้งที่เลือดลด
 
             if (currentHealth <= 0)
             {
@@ -45,5 +51,11 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player Died!");
         // ใส่ระบบตาย เช่น รีเซ็ตเกม, แสดง UI, เล่นอนิเมชั่น ฯลฯ
         GetComponent<PlayerDeath>().HandleDeath();
+    }
+
+    // ฟังก์ชันสำหรับอัพเดตค่าเลือดใน UI
+    void UpdateHealthUI()
+    {
+        healthText.text = "HP: " + currentHealth.ToString(); // แสดงค่าเลือดใน UI
     }
 }
